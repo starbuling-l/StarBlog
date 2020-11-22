@@ -12,7 +12,7 @@ import (
 )
 
 //获取多个文章标签
-//curl 127.0.0.1:8000/api/v1/tags
+//curl 127.0.0.1:9000/api/v1/tags
 func GetTags(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
@@ -38,7 +38,7 @@ func GetTags(c *gin.Context) {
 }
 
 //添加文章标签
-//POST http://127.0.0.1:8000/api/v1/tags?name=1&state=1&created_by=test
+//POST http://127.0.0.1:9000/api/v1/tags?name=1&state=1&created_by=test
 func AddTag(c *gin.Context) {
 	name := c.Query("name")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
@@ -69,7 +69,7 @@ func AddTag(c *gin.Context) {
 }
 
 //编辑文章标签
-//PUT 访问 http://127.0.0.1:8000/api/v1/tags/1?name=edit1&state=0&modified_by=edit1
+//PUT 访问 http://127.0.0.1:9000/api/v1/tags/1?name=edit1&state=0&modified_by=edit1
 func EditTag(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 	name := c.Query("name")
@@ -114,7 +114,7 @@ func EditTag(c *gin.Context) {
 }
 
 //删除文章标签
-//DELETE 访问 http://127.0.0.1:8000/api/v1/tags/1
+//DELETE 访问 http://127.0.0.1:9000/api/v1/tags/1
 func DeleteTag(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 
