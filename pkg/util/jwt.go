@@ -13,4 +13,14 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-
+func GenerateToken(username, passward string) (string error) {
+	expiresTime = tie
+		claims := Claims{
+		username,
+		passward,
+		jwt.StandardClaims{
+			ExpiresAt:,
+			Issuer: "gin",
+		}}
+	return ,error()
+}
