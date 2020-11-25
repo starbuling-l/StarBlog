@@ -2,15 +2,19 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/starbuling-l/StarBlog/middleware/jwt"
 	"github.com/starbuling-l/StarBlog/pkg/setting"
+	"github.com/starbuling-l/StarBlog/routers/api"
 	v1 "github.com/starbuling-l/StarBlog/routers/api/v1"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
 	gin.SetMode(setting.RunMode)
+	r.GET("auth", api.GetAuth)
 
 	apiv1 := r.Group("/api/v1")
+	apiv1.Use(jwt.JWT())
 	{
 		//获取标签
 		apiv1.GET("/tags", v1.GetTags)
@@ -19,7 +23,6 @@ func InitRouter() *gin.Engine {
 		//修改指定标签
 		apiv1.PUT("/tags/:id", v1.EditTag)
 		//删除指定标签
-		apiv1.DELETE("/tags/:id", v1.DeleteTag)
 	}
 	{
 		//获取标签

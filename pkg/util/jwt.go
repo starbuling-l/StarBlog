@@ -14,22 +14,23 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(username, passward string) (string, error) {
+func GenerateToken(username, password string) (string, error) {
 	expiresTime := time.Now().Add(3 * time.Hour)
 	claims := Claims{
 		username,
-		passward,
+		password,
 		jwt.StandardClaims{
 			ExpiresAt: expiresTime.Unix(),
 			Issuer:    "gin",
-		}}
+		},
+	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := tokenClaims.SignedString(jwtSecret)
 	return token, err
 }
 
 func ParseToken(token string) (*Claims, error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (i interface{}, err error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil
 	})
 	if tokenClaims != nil {

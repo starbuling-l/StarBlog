@@ -1,6 +1,8 @@
 # github.com/astaxie/beego v1.12.3
 github.com/astaxie/beego/logs
 github.com/astaxie/beego/validation
+# github.com/dgrijalva/jwt-go v3.2.0+incompatible
+github.com/dgrijalva/jwt-go
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
 # github.com/gin-gonic/gin v1.6.3
