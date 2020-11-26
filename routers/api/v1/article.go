@@ -12,8 +12,12 @@ import (
 	"net/http"
 )
 
-//获取单个文章
-//GET 访问 http://127.0.0.1:9000/api/v1/articles/1
+//获取单个文章 GET 访问 http://127.0.0.1:9000/api/v1/articles/1
+// @Summary 获取单个文章
+// @Produce  json
+// @Param id path int true "ID"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/articles/{id} [get]
 func GetArticle(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 
@@ -42,8 +46,13 @@ func GetArticle(c *gin.Context) {
 	})
 }
 
-//获取多个文章
-//GET 访问 http://127.0.0.1:9000/api/v1/article
+//获取多个文章 GET 访问 http://127.0.0.1:9000/api/v1/articles
+// @Summary 获取多个文章
+// @Produce  json
+// @Param tag_id query int true "tag_id"
+// @Param state query int false "State"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/article [get]
 func GetArticles(c *gin.Context) {
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
@@ -82,8 +91,17 @@ func GetArticles(c *gin.Context) {
 	})
 }
 
-//添加文章
-//POST http://127.0.0.1:9000/api/v1/articles?tag_id=3&title=test1&desc=test-desc&content=test-content&created_by=test-created&state=1
+//添加文章 POST http://127.0.0.1:9000/api/v1/articles?tag_id=3&title=test1&desc=test-desc&content=test-content&created_by=test-created&state=1
+// @Summary 添加文章
+// @Produce  json
+// @Param tag_id query int true "tag_id"
+// @Param title query string true "title"
+// @Param desc query string true "desc"
+// @Param content query string true "content"
+// @Param state query int false "State"
+// @Param created_by query string true "created_by"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/articles [post]
 func AddArticle(c *gin.Context) {
 	tagId := com.StrTo(c.Query("tag_id")).MustInt()
 	title := c.Query("title")
@@ -131,8 +149,17 @@ func AddArticle(c *gin.Context) {
 	})
 }
 
-//编辑文章
-//PUT 访问 http://127.0.0.1:9000/api/v1/articles/1?tag_id=3&title=test-edit1&desc=test-desc-edit&content=test-content-edit&modified_by=test-created-edit&state=0
+//编辑文章 PUT 访问 http://127.0.0.1:9000/api/v1/articles/1?tag_id=3&title=test-edit1&desc=test-desc-edit&content=test-content-edit&modified_by=test-created-edit&state=0
+// @Summary 编辑文章
+// @Produce  json
+// @Param id path int true "id"
+// @Param tag_id path int true "tag_id"
+// @Param title query string true "title"
+// @Param desc query string true "desc"
+// @Param content query string true "content"
+// @Param modified_by query string true "modified_by"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/articles/{id} [put]
 func EditArticle(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 	tagId := com.StrTo(c.Query("tag_id")).MustInt()
@@ -189,8 +216,12 @@ func EditArticle(c *gin.Context) {
 	})
 }
 
-//删除文章
-//DELETE 访问 http://127.0.0.1:9000/api/v1/articles/1
+//删除文章 DELETE 访问 http://127.0.0.1:9000/api/v1/articles/1
+// @Summary 删除文章
+// @Produce  json
+// @Param id path int true "id"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/articles/{id} [delete]
 func DeleteArticle(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 

@@ -15,6 +15,13 @@ type auth struct {
 	Password string `valid:"Required; MaxSize(50)"`
 }
 
+//获取token curl 127.0.0.1:9000/api/auth
+// @Summary 获取token
+// @Produce  json
+// @Param username query string true "username"
+// @Param password query string true "password"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/auth [get]
 func GetAuth(c *gin.Context) {
 	data := make(map[string]interface{})
 	code := e.INVALID_PARAMS
