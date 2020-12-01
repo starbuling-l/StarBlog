@@ -15,6 +15,7 @@ type Model struct {
 	ID         int `gorm:"primary_key" json:"id"`
 	CreatedOn  int `json:"created_on"`
 	ModifiedOn int `json:"modified_on"`
+	DeletedOn  int `json:"deleted_on"`
 }
 
 func init() {
@@ -78,18 +79,19 @@ func deleteCallback(scope *gorm.Scope) {
 			extraOption = fmt.Sprint(str)
 		}
 
-		if deleteOn, ok := scope.FieldByName("DeleteOn"); ok && !scope.Search.Unscoped {
+		deletedOn, ok := scope.FieldByName("DeletedOn")
+		if ok && !scope.Search.Unscoped {
 			scope.Raw(fmt.Sprintf(
 				"UPDATE %v SET %v = %v%v%v",
 				scope.QuotedTableName(),
-				scope.Quote(deleteOn.DBName),
+				scope.Quote(deletedOn.DBName),
 				scope.AddToVars(time.Now().Unix()),
 				addExtraSpaceIfExist(scope.CombinedConditionSql()),
 				addExtraSpaceIfExist(extraOption),
 			)).Exec()
 		} else {
 			scope.Raw(fmt.Sprintf(
-				"DELET FROM %v%v%v",
+				"DELETE FROM %v%v%v",
 				scope.QuotedTableName(),
 				addExtraSpaceIfExist(scope.CombinedConditionSql()),
 				addExtraSpaceIfExist(extraOption),
@@ -104,6 +106,16 @@ func addExtraSpaceIfExist(str string) string {
 		return "" + str
 	}
 	return ""
+}
+
+func CleanAllTags() bool {
+	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
+	return true
+}
+
+func CleanAllArticles() bool {
+	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{})
+	return true
 }
 
 func closeDb() {
