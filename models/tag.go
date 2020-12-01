@@ -1,10 +1,5 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-	"time"
-)
-
 type Tag struct {
 	Model
 
@@ -62,12 +57,12 @@ func EditTag(id int, data interface{}) bool {
 }
 
 // models callbacks 避免其默认值为空的情况
-func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
-	scope.SetColumn("created_on", time.Now().Unix())
-	return nil
-}
-
-func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
-	scope.SetColumn("modified_on", time.Now().Unix())
-	return nil
-}
+//func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
+//	scope.SetColumn("created_on", time.Now().Unix())
+//	return nil
+//}
+//
+//func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
+//	scope.SetColumn("modified_on", time.Now().Unix())
+//	return nil
+//}

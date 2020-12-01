@@ -14,6 +14,7 @@ import (
 
 // 测试 curl 127.0.0.1:9000/test
 //{"message":"test"}
+//tree -I vendor -L 4
 
 //优雅重启
 //每次更新发布、或者修改配置文件等 给该进程发送SIGTERM 信号 ，而不需要强制结束应用

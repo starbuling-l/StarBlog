@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-//获取多个文章标签 curl 127.0.0.1:9000/api/v1/tags
+
 // @Summary 获取多个文章标签
 // @Produce  json
 // @Param name query string true "Name"
@@ -129,12 +129,12 @@ func EditTag(c *gin.Context) {
 
 }
 
-//删除文章标签 DELETE 访问 http://127.0.0.1:9000/api/v1/tags/1
+
 // @Summary 删除文章标签
 // @Produce  json
 // @Param id query string true "Id"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/tags [delete]
+// @Router /api/v1/tags/{id} [delete]
 func DeleteTag(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 
