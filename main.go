@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/starbuling-l/StarBlog/models"
-	"github.com/starbuling-l/StarBlog/pkg/logging"
 	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"github.com/starbuling-l/StarBlog/routers"
 	"log"
@@ -49,7 +48,7 @@ func init()  {
 	//将多个包中的 init 函数改为 Setup 函数手动控制初始化先后顺序
 	setting.SetUp()
 	models.Setup()
-	logging.Setup()
+	//logging.Setup()
 }
 
 func main() {

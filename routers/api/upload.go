@@ -22,14 +22,16 @@ func UploadImage(ctx *gin.Context) {
 		imageName := upload.GetImageName(image.Filename)
 		fullPath := upload.GetImageFullPath()
 		savePath := upload.GetImagePath()
-		src := fullPath + savePath
+		src := fullPath + imageName
 		if !upload.CheckImageExt(imageName) || !upload.CheckImageSize(file) {
 			code = e.ERROR_UPLOAD_CHECK_IMAGE_FORMAT
 		} else {
 			err := upload.CheckImage(fullPath)
 			if err != nil {
+				log.Println(err)
 				code = e.ERROR_UPLOAD_CHECK_IMAGE_FAIL
 			} else if err := ctx.SaveUploadedFile(image, src); err != nil {
+				log.Println(err)
 				code = e.ERROR_UPLOAD_SAVE_IMAGE_FAIL
 			} else {
 				data["image_url"] = upload.GetImageFullUrl(imageName)

@@ -118,6 +118,7 @@ func SetUp() {
 	ServerSetting.ReadTimeout = ServerSetting.WriteTimeout * time.Second
 }
 
+//ini 文件必须为大写的驼峰名命法
 func MapTo(section string, v interface{}) {
 	if err := config.Section(section).MapTo(v); err != nil {
 		log.Fatalf("config.MapTo %s err: %v", section, err)
