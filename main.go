@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/starbuling-l/StarBlog/models"
+	"github.com/starbuling-l/StarBlog/pkg/logging"
 	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"github.com/starbuling-l/StarBlog/routers"
 	"log"
@@ -43,16 +45,37 @@ import (
 //	}
 //}
 
+func init()  {
+	//将多个包中的 init 函数改为 Setup 函数手动控制初始化先后顺序
+	setting.SetUp()
+	models.Setup()
+	logging.Setup()
+}
+
 func main() {
 
-	Addr := fmt.Sprintf(":%d", setting.HTTPPort)
+	Addr := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
 	router := routers.InitRouter()
+
+	/*	pprof.Register(router)
+
+		f, err := os.Create("trace.out")
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		err = trace.Start(f)
+		if err != nil {
+			panic(err)
+		}
+		defer trace.Stop()*/
 
 	server := &http.Server{
 		Handler:           router,
 		Addr:              Addr,
-		ReadHeaderTimeout: setting.ReadTimeOut,
-		WriteTimeout:      setting.WriteTimeOut,
+		ReadHeaderTimeout: setting.ServerSetting.ReadTimeout,
+		WriteTimeout:      setting.ServerSetting.WriteTimeout,
 		MaxHeaderBytes:    1 << 20,
 	}
 	go func() {

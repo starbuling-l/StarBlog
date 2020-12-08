@@ -2,6 +2,7 @@ package logging
 
 import (
 	"fmt"
+	"github.com/starbuling-l/StarBlog/pkg/file"
 	"log"
 	"os"
 	"path/filepath"
@@ -29,9 +30,14 @@ const (
 	FATAL
 )
 
-func init() {
-	filename := GetLogFilePath()
-	F = openLogFile(filename)
+func Setup() {
+	var err error
+	filePath := GetLogFilePath()
+	fileName := GetLogFileName()
+	F, err = file.MustOpen(fileName, filePath)
+	if err != nil {
+		log.Fatalf("logging.Setup err:%v", err)
+	}
 	logger = log.New(F, DefaultPrefix, log.LstdFlags)
 }
 

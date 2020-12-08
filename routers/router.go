@@ -2,6 +2,8 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/starbuling-l/StarBlog/pkg/upload"
+	"net/http"
 
 	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"github.com/starbuling-l/StarBlog/routers/api"
@@ -15,15 +17,15 @@ import (
 // InitRouter initialize routing information
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	gin.SetMode(setting.RunMode)
+	gin.SetMode(setting.ServerSetting.RunMode)
 	//获取 token
 	//curl http://127.0.0.1:9000/auth?username=test&password=test123456
 	r.GET("/api/auth", api.GetAuth)
-
+	r.StaticFS("/api/upload/images", http.Dir(upload.GetImageFullPath()))
+	r.GET("/api/upload", api.UploadImage)
 	//引入swagger
 	//http://127.0.0.1:9000/swagger/index.html
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 
 	apiv1 := r.Group("/api/v1")
 	//apiv1.Use(jwt.JWT())

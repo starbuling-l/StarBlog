@@ -2,23 +2,23 @@ package logging
 
 import (
 	"fmt"
-	"log"
-	"os"
+	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"time"
 )
 
-var (
-	LogSavePath = "runtime/logs/"
-	LogSaveName = "log"
-	LogFileExt  = "log"
-	TimeFormat  = "20060102"
-)
-
 func GetLogFilePath() string {
-	return fmt.Sprintf("%s", LogSavePath)
+	return fmt.Sprintf("%s", setting.AppSetting.LogSavePath)
 }
 
-func GetLogFileFullPath() string {
+func GetLogFileName() string {
+	return fmt.Sprintf("%s%s.%s",
+		setting.AppSetting.LogSavePath,
+		time.Now().Format(setting.AppSetting.TimeFormat),
+		setting.AppSetting.LogFileExt,
+	)
+}
+
+/*func GetLogFileFullPath() string {
 	prefixPath := GetLogFilePath()
 	suffixPath := fmt.Sprintf("%s%s.%s", LogSaveName, time.Now().Format(TimeFormat), LogFileExt)
 	return fmt.Sprintf("%s%s", prefixPath, suffixPath)
@@ -45,3 +45,4 @@ func mkdir() {
 		panic(err)
 	}
 }
+*/

@@ -18,28 +18,30 @@ type Model struct {
 	DeletedOn  int `json:"deleted_on"`
 }
 
-func init() {
+func Setup() {
 	var err error
-	db, err = gorm.Open(setting.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		setting.User,
-		setting.PassWord,
-		setting.Host,
-		setting.Name))
+	db, err = gorm.Open(setting.DatabaseSetting.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		setting.DatabaseSetting.User,
+		setting.DatabaseSetting.Password,
+		setting.DatabaseSetting.Host,
+		setting.DatabaseSetting.Name))
 	if err != nil {
-		log.Printf("err is %s", err)
+		log.Printf("models.Setup err %v", err)
 	}
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-		return setting.TablePrefix + defaultTableName
+		return setting.DatabaseSetting.TablePrefix + defaultTableName
 	}
 	db.SingularTable(true)
-	db.LogMode(true)
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
-
+	//db.LogMode(true)
 	//callback方法注册进gorm的钩子里
 	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
 	db.Callback().Update().Replace("gorm:update_time_stamp", updateTimestampForUpdateCallback)
 	db.Callback().Delete().Replace("gorm:delete", deleteCallback)
+
+	db.DB().SetMaxIdleConns(10)
+	db.DB().SetMaxOpenConns(100)
+
+
 
 }
 
@@ -108,11 +110,13 @@ func addExtraSpaceIfExist(str string) string {
 	return ""
 }
 
+//定时清理软删除的tag
 func CleanAllTags() bool {
 	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
 	return true
 }
 
+//定时清除软删除的articles
 func CleanAllArticles() bool {
 	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{})
 	return true

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var (
+/*var (
 	Cfg *ini.File
 
 	PageSize  int
@@ -60,4 +60,66 @@ func LoadDataBase() {
 	Host = Cfg.Section("database").Key("HOST").MustString("127.0.0.1:3306")
 	Name = Cfg.Section("database").Key("NAME").MustString("blog")
 	TablePrefix = Cfg.Section("database").Key("TABLE_PREFIX").MustString("blog_")
+}
+*/
+
+type App struct {
+	JwtSecret       string
+	PageSize        int
+	RuntimeRootPath string
+
+	ImagePrefixUrl string
+	ImageSavePath  string
+	ImageMaxSize   int
+	ImageAllowExts []string
+
+	LogSavePath string
+	LogSaveName string
+	LogFileExt  string
+	TimeFormat  string
+}
+
+var AppSetting = &App{}
+
+type Server struct {
+	RunMode      string
+	HttpPort     int
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+}
+
+var ServerSetting = &Server{}
+
+type Database struct {
+	Type        string
+	User        string
+	Password    string
+	Host        string
+	Name        string
+	TablePrefix string
+}
+
+var DatabaseSetting = &Database{}
+
+var config *ini.File
+
+func SetUp() {
+	var err error
+	config, err = ini.Load("conf/app.ini")
+	if err != nil {
+		log.Fatalf("setting.Setup fail to  parse 'conf/app.ini':%v", err)
+	}
+	MapTo("app", AppSetting)
+	MapTo("server", ServerSetting)
+	MapTo("database", DatabaseSetting)
+
+	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
+	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
+	ServerSetting.ReadTimeout = ServerSetting.WriteTimeout * time.Second
+}
+
+func MapTo(section string, v interface{}) {
+	if err := config.Section(section).MapTo(v); err != nil {
+		log.Fatalf("config.MapTo %s err: %v", section, err)
+	}
 }
