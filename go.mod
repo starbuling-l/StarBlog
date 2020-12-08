@@ -6,7 +6,6 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/astaxie/beego v1.12.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-ini/ini v1.62.0
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
