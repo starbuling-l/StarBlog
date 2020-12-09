@@ -101,6 +101,16 @@ type Database struct {
 
 var DatabaseSetting = &Database{}
 
+type Redis struct {
+	Host        string
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout time.Duration
+}
+
+var RedisSetting = &Redis{}
+
 var config *ini.File
 
 func SetUp() {
@@ -112,10 +122,12 @@ func SetUp() {
 	MapTo("app", AppSetting)
 	MapTo("server", ServerSetting)
 	MapTo("database", DatabaseSetting)
+	MapTo("redis", RedisSetting)
 
 	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 	ServerSetting.ReadTimeout = ServerSetting.WriteTimeout * time.Second
+	RedisSetting.IdleTimeout = RedisSetting.IdleTimeout * time.Second
 }
 
 //ini 文件必须为大写的驼峰名命法
