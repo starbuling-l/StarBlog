@@ -11,7 +11,6 @@ import (
 	"net/http"
 )
 
-
 // @Summary 获取多个文章标签
 // @Produce  json
 // @Param name query string true "Name"
@@ -129,7 +128,6 @@ func EditTag(c *gin.Context) {
 
 }
 
-
 // @Summary 删除文章标签
 // @Produce  json
 // @Param id query string true "Id"
@@ -155,5 +153,3 @@ func DeleteTag(c *gin.Context) {
 		})
 	}
 }
-
-

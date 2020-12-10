@@ -1,19 +1,20 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 type Article struct {
 	Model
 
 	TagID int `json:"tag_id" gorm:"index"`
 	Tag   Tag `json:"tag"`
 
-	Title string `json:"title"`
-	Desc string `json:"desc"`
-	Content string `json:"content"`
-	CreatedBy string `json:"created_by"`
+	Title      string `json:"title"`
+	Desc       string `json:"desc"`
+	Content    string `json:"content"`
+	CreatedBy  string `json:"created_by"`
 	ModifiedBy string `json:"modified_by"`
-	State int `json:"state"`
+	State      int    `json:"state"`
 }
-
 
 func GetArticles(pageNum int, pageSize int, maps interface{}) (articles []Article) {
 	db.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&articles)
@@ -25,33 +26,46 @@ func GetArticlesTotal(maps interface{}) (count int) {
 	return
 }
 
-func GetArticle(id int) (article Article) {
-	db.Where("id = ?",id).First(&article)
-	db.Model(&article).Related(&article.Tag)
-	return
+func GetArticle(id int) (*Article, error) {
+	var article Article
+	err := db.Where("id = ?", id).First(&article).Related(&article.Tag).Error
+	if err != nil {
+		return nil, err
+	}
+	return &article, nil
 }
 
 func AddArticle(data map[string]interface{}) bool {
 	db.Create(&Article{
-		TagID : data["tag_id"].(int),
-		Title : data["title"].(string),
-		Desc : data["desc"].(string),
-		Content : data["content"].(string),
-		CreatedBy : data["created_by"].(string),
-		State : data["state"].(int),
+		TagID:     data["tag_id"].(int),
+		Title:     data["title"].(string),
+		Desc:      data["desc"].(string),
+		Content:   data["content"].(string),
+		CreatedBy: data["created_by"].(string),
+		State:     data["state"].(int),
 	})
 	return true
 }
 
-func ExistArticleByID(id int) bool {
+func ExistArticleByID(id int) (bool, error) {
+	//var article Article
+	//db.Select("id").Where("id =?", id).First(&article)
+	//if article.ID > 0 {
+	//	return true
+	//}
+	//return false
 	var article Article
-	db.Select("id").Where("id =?", id).First(&article)
-	if article.ID > 0 {
-		return true
+	err := db.Select("id").Where("id = ? AND deleted_on = ? ", id, 0).First(&article).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
 	}
-	return false
-}
 
+	if article.ID > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
 
 /*func ExistArticleByName(name string) bool {
 	var Article Article
@@ -61,7 +75,6 @@ func ExistArticleByID(id int) bool {
 	}
 	return false
 }*/
-
 
 func DeleteArticle(id int) bool {
 	db.Where("id = ?", id).Delete(&Article{})
