@@ -1,7 +1,7 @@
 package main
 
 import (
-	cron "github.com/robfig/cron"
+	"github.com/robfig/cron"
 	"github.com/starbuling-l/StarBlog/models"
 	"log"
 	"time"

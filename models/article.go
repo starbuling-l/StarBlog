@@ -29,7 +29,7 @@ func GetArticlesTotal(maps interface{}) (count int) {
 func GetArticle(id int) (*Article, error) {
 	var article Article
 	err := db.Where("id = ?", id).First(&article).Related(&article.Tag).Error
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 	return &article, nil
@@ -78,7 +78,7 @@ func ExistArticleByID(id int) (bool, error) {
 
 func DeleteArticle(id int) bool {
 	db.Where("id = ?", id).Delete(&Article{})
-	return true
+	return false
 }
 
 func EditArticle(id int, data interface{}) bool {
@@ -95,4 +95,4 @@ func EditArticle(id int, data interface{}) bool {
 //func (article *Article) BeforeUpdate(scope *gorm.Scope) error {
 //	scope.SetColumn("modified_on", time.Now().Unix())
 //	return nil
-//}
+//
