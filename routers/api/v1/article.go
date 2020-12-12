@@ -20,7 +20,7 @@ import (
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles/{id} [get]
 func GetArticle(c *gin.Context) {
-	appG := app.Gin{C: c}
+	g := app.Gin{C: c}
 	id := com.StrTo(c.Param("id")).MustInt()
 
 	valid := validation.Validation{}
@@ -28,28 +28,28 @@ func GetArticle(c *gin.Context) {
 
 	if valid.HasErrors() {
 		app.MarkErrors(valid.Errors)
-		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		g.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
 		return
 	}
 
 	articleService := article_service.Article{ID: id}
 	exists, err := articleService.ExistByID()
 	if err != nil {
-		appG.Response(http.StatusOK, e.ERROR_CHECK_EXIST_ARTICLE_FAIL, nil)
+		g.Response(http.StatusOK, e.ERROR_CHECK_EXIST_ARTICLE_FAIL, nil)
 		return
 	}
 	if !exists {
-		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
+		g.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
 		return
 	}
 
 	article, err := articleService.Get()
 	if err != nil {
-		appG.Response(http.StatusOK, e.ERROR_GET_ARTICLE_FAIL, nil)
+		g.Response(http.StatusOK, e.ERROR_GET_ARTICLE_FAIL, nil)
 		return
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, article)
+	g.Response(http.StatusOK, e.SUCCESS, article)
 
 	/*	code := e.INVALID_PARAMS
 		var data interface{}
@@ -80,6 +80,7 @@ func GetArticle(c *gin.Context) {
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/article [get]
 func GetArticles(c *gin.Context) {
+	g := app.Gin{C: c}
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
@@ -98,17 +99,17 @@ func GetArticles(c *gin.Context) {
 		valid.Min(tagId, 1, "tag_id").Message("标签ID必须大于0")
 	}
 
-	code := e.INVALID_PARAMS
-	if !valid.HasErrors() {
-		code = e.SUCCESS
-
-		data["lists"] = models.GetArticles(util.GetPage(c), setting.AppSetting.PageSize, maps)
-		data["total"] = models.GetArticlesTotal(maps)
-	} else {
-		for _, err := range valid.Errors {
-			log.Printf("err.key: %s,err.message:%s", err.Key, err.Message)
-		}
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		g.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
 	}
+
+	data["lists"] = models.GetArticles(util.GetPage(c), setting.AppSetting.PageSize, maps)
+	data["total"] = models.GetArticlesTotal(maps)
+
+
+
+	g.Response(http.StatusOK,e.SUCCESS,ar)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,

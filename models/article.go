@@ -1,6 +1,8 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 type Article struct {
 	Model
@@ -16,38 +18,46 @@ type Article struct {
 	State      int    `json:"state"`
 }
 
-func GetArticles(pageNum int, pageSize int, maps interface{}) (articles []Article) {
-	db.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&articles)
-	return
-}
-
-func GetArticlesTotal(maps interface{}) (count int) {
-	db.Model(&Article{}).Where(maps).Count(count)
-	return
-}
-
-func GetArticle(id int) (*Article, error) {
-	var article Article
-	err := db.Where("id = ?", id).First(&article).Related(&article.Tag).Error
+func GetArticles(pageNum int, pageSize int, maps interface{}) (articles *[]Article, err error) {
+	err = db.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&articles).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
-	return &article, nil
+	return
 }
 
-func AddArticle(data map[string]interface{}) bool {
-	db.Create(&Article{
+func GetArticlesTotal(maps interface{}) (count int, err error) {
+	err = db.Model(&Article{}).Where(maps).Count(count).Error
+	if err != nil {
+		return 0, err
+	}
+	return
+}
+
+func GetArticle(id int) (article *Article, err error) {
+	err = db.Where("id = ?", id).First(&article).Related(&article.Tag).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return
+}
+
+func AddArticle(data map[string]interface{}) (err error) {
+	err = db.Create(&Article{
 		TagID:     data["tag_id"].(int),
 		Title:     data["title"].(string),
 		Desc:      data["desc"].(string),
 		Content:   data["content"].(string),
 		CreatedBy: data["created_by"].(string),
 		State:     data["state"].(int),
-	})
-	return true
+	}).Error
+	if err != nil {
+		return err
+	}
+	return
 }
 
-func ExistArticleByID(id int) (bool, error) {
+func ExistArticleByID(id int) (flag bool, err error) {
 	//var article Article
 	//db.Select("id").Where("id =?", id).First(&article)
 	//if article.ID > 0 {
@@ -55,8 +65,8 @@ func ExistArticleByID(id int) (bool, error) {
 	//}
 	//return false
 	var article Article
-	err := db.Select("id").Where("id = ? AND deleted_on = ? ", id, 0).First(&article).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	err = db.Select("id").Where("id = ? AND deleted_on = ? ", id, 0).First(&article).Error
+	if err != nil {
 		return false, err
 	}
 
@@ -76,14 +86,29 @@ func ExistArticleByID(id int) (bool, error) {
 	return false
 }*/
 
-func DeleteArticle(id int) bool {
-	db.Where("id = ?", id).Delete(&Article{})
-	return false
+func DeleteArticle(id int) (err error) {
+	err = db.Where("id = ?", id).Delete(&Article{}).Error
+	if err != nil {
+		return err
+	}
+	return
 }
 
-func EditArticle(id int, data interface{}) bool {
-	db.Model(&Article{}).Where("id = ?", id).Updates(data)
-	return true
+func EditArticle(id int, data interface{}) (err error) {
+	err = db.Model(&Article{}).Where("id = ?", id).Updates(data).Error
+	if err != nil {
+		return err
+	}
+	return
+}
+
+//定时清除软删除的articles
+func CleanAllArticles() (err error) {
+	err = db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{}).Error
+	if err != nil {
+		return err
+	}
+	return
 }
 
 // models callbacks 避免其默认值为空的情况

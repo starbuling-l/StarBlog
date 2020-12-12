@@ -114,11 +114,7 @@ func CleanAllTags() bool {
 	return true
 }
 
-//定时清除软删除的articles
-func CleanAllArticles() bool {
-	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{})
-	return true
-}
+
 
 func closeDb() {
 	defer db.Close()
