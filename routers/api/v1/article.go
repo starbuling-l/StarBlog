@@ -111,11 +111,6 @@ func GetArticles(c *gin.Context) {
 
 	g.Response(http.StatusOK,e.SUCCESS,ar)
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
 }
 
 // @Summary 添加文章
