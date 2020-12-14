@@ -81,6 +81,7 @@ func GetArticle(c *gin.Context) {
 // @Router /api/v1/article [get]
 func GetArticles(c *gin.Context) {
 	g := app.Gin{C: c}
+
 	maps := make(map[string]interface{})
 	data := make(map[string]interface{})
 
@@ -92,6 +93,7 @@ func GetArticles(c *gin.Context) {
 		maps["state"] = state
 		valid.Range(state, 0, 1, "state").Message("状态只允许为0或1")
 	}
+
 	var tagId int = -1
 	if arg := c.Query("tag_id"); arg != "" {
 		tagId = com.StrTo(arg).MustInt()
@@ -104,13 +106,29 @@ func GetArticles(c *gin.Context) {
 		g.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
 	}
 
-	data["lists"] = models.GetArticles(util.GetPage(c), setting.AppSetting.PageSize, maps)
-	data["total"] = models.GetArticlesTotal(maps)
+	articleService := article_service.Article{
+		TagID:    tagId,
+		State:    state,
+		PageNum:  util.GetPage(c),
+		PageSize: setting.AppSetting.PageSize,
+	}
 
+	lists, err := articleService.GetAll()
+	if err != nil {
+		g.Response(http.StatusInternalServerError, e.ERROR_GET_ARTICLES_FAIL, nil)
+		return
+	}
 
+	total, err := articleService.Count()
+	if err != nil {
+		g.Response(http.StatusInternalServerError, e.ERROR_COUNT_ARTICLE_FAIL, nil)
+		return
+	}
 
-	g.Response(http.StatusOK,e.SUCCESS,ar)
+	data["lists"] = lists
+	data["total"] = total
 
+	g.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // @Summary 添加文章

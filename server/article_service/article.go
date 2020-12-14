@@ -109,6 +109,14 @@ func (a *Article) GetAll() (articles []*models.Article, err error) {
 	return
 }
 
+func (a *Article) Delete() error {
+	return models.DeleteArticle(a.ID)
+}
+
+func (a *Article) Count() (int, error) {
+	return models.GetArticlesTotal(a.getMaps())
+}
+
 func (a *Article) ExistByID() (bool, error) {
 	return models.ExistArticleByID(a.ID)
 }

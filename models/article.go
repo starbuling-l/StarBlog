@@ -18,7 +18,7 @@ type Article struct {
 	State      int    `json:"state"`
 }
 
-func GetArticles(pageNum int, pageSize int, maps interface{}) (articles *[]Article, err error) {
+func GetArticles(pageNum int, pageSize int, maps interface{}) (articles []*Article, err error) {
 	err = db.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&articles).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
