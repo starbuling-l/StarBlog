@@ -142,6 +142,8 @@ func GetArticles(c *gin.Context) {
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles [post]
 func AddArticle(c *gin.Context) {
+	g := app.Gin{C: c}
+
 	tagId := com.StrTo(c.Query("tag_id")).MustInt()
 	title := c.Query("title")
 	desc := c.Query("desc")
@@ -158,7 +160,19 @@ func AddArticle(c *gin.Context) {
 	valid.MaxSize(createdBy, 100, "created_by").Message("创建人最长为100个字符")
 	valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 
-	code := e.INVALID_PARAMS
+	if valid.HasErrors()  {
+		app.MarkErrors(valid.Errors)
+		g.Response(http.StatusOK,e.INVALID_PARAMS,nil)
+	}
+
+	tag_service.Tag{ID:tagId}
+
+	 exits,err := models.ExistTagByID(tagId)
+	if err!=nil {
+		return
+	}
+
+	/*	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
 		if models.ExistTagByID(tagId) {
 
@@ -185,7 +199,7 @@ func AddArticle(c *gin.Context) {
 		"code": code,
 		"msg":  e.GetMsg(code),
 		"data": make(map[string]string),
-	})
+	})*/
 }
 
 // @Summary 编辑文章

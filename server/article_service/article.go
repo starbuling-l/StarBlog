@@ -121,8 +121,8 @@ func (a *Article) ExistByID() (bool, error) {
 	return models.ExistArticleByID(a.ID)
 }
 
-func (a *Article) getMaps() (maps map[string]interface{}) {
-	//maps := make(map[string]interface{})
+func (a *Article) getMaps() map[string]interface{} {
+	maps := make(map[string]interface{})
 	maps["delete_on"] = 0
 	if a.State != -1 {
 		maps["state"] = a.State
@@ -131,5 +131,5 @@ func (a *Article) getMaps() (maps map[string]interface{}) {
 	if a.TagID != -1 {
 		maps["tag_id"] = a.TagID
 	}
-	return
+	return maps
 }

@@ -108,11 +108,6 @@ func addExtraSpaceIfExist(str string) string {
 	return ""
 }
 
-//定时清理软删除的tag
-func CleanAllTags() bool {
-	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
-	return true
-}
 
 
 

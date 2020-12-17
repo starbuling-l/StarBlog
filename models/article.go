@@ -35,7 +35,7 @@ func GetArticlesTotal(maps interface{}) (count int, err error) {
 }
 
 func GetArticle(id int) (article *Article, err error) {
-	err = db.Where("id = ?", id).First(&article).Related(&article.Tag).Error
+	err = db.Where("id = ? AND deleted_on = ?", id, 0).First(&article).Related(&article.Tag).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -95,14 +95,14 @@ func DeleteArticle(id int) (err error) {
 }
 
 func EditArticle(id int, data interface{}) (err error) {
-	err = db.Model(&Article{}).Where("id = ?", id).Updates(data).Error
+	err = db.Model(&Article{}).Where("id = ? AND deleted_on = ?", id, 0).Updates(data).Error
 	if err != nil {
 		return err
 	}
 	return
 }
 
-//定时清除软删除的articles
+//CleanAllArticles clear soft deleted articles regularly
 func CleanAllArticles() (err error) {
 	err = db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{}).Error
 	if err != nil {
