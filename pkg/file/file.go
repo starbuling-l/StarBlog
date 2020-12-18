@@ -66,7 +66,7 @@ func MustOpen(fileName, filePath string) (*os.File, error) {
 		return nil, fmt.Errorf("os.Getwd err:%v", err)
 	}
 
-	src := dir + "\\" + fileName
+	src := dir + string(os.PathSeparator) + fileName
 	perm := CheckPermission(src)
 	if perm {
 		return nil, fmt.Errorf("file.CheckPermisson denied src: %s", src)
