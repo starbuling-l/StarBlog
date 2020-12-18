@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/starbuling-l/StarBlog/models"
-	"github.com/starbuling-l/StarBlog/pkg/go_redis"
-	"github.com/starbuling-l/StarBlog/pkg/setting"
-	"github.com/starbuling-l/StarBlog/routers"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/starbuling-l/StarBlog/models"
+	"github.com/starbuling-l/StarBlog/pkg/go_redis"
+	"github.com/starbuling-l/StarBlog/pkg/setting"
+	"github.com/starbuling-l/StarBlog/routers"
 )
 
 // 测试 curl 127.0.0.1:9000/test

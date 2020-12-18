@@ -1,9 +1,10 @@
 package cache_service
 
 import (
-	"github.com/starbuling-l/StarBlog/pkg/e"
 	"strconv"
 	"strings"
+
+	"github.com/starbuling-l/StarBlog/pkg/e"
 )
 
 type Tag struct {
@@ -15,7 +16,7 @@ type Tag struct {
 	PageSize int
 }
 
-func (t *Tag) GetTag() string {
+func (t *Tag) GetTagKey() string {
 	keys := []string{
 		e.CACHE_TAG,
 		"LIST",

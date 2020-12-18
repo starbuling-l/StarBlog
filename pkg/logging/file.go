@@ -2,8 +2,9 @@ package logging
 
 import (
 	"fmt"
-	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"time"
+
+	"github.com/starbuling-l/StarBlog/pkg/setting"
 )
 
 func GetLogFilePath() string {

@@ -2,14 +2,15 @@ package upload
 
 import (
 	"fmt"
-	"github.com/starbuling-l/StarBlog/pkg/file"
-	"github.com/starbuling-l/StarBlog/pkg/setting"
-	"github.com/starbuling-l/StarBlog/pkg/util"
 	"log"
 	"mime/multipart"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/starbuling-l/StarBlog/pkg/file"
+	"github.com/starbuling-l/StarBlog/pkg/setting"
+	"github.com/starbuling-l/StarBlog/pkg/util"
 )
 
 // GetImageName get image name

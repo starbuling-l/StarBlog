@@ -2,9 +2,11 @@ package go_redis
 
 import (
 	"encoding/json"
-	"github.com/garyburd/redigo/redis"
-	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"time"
+
+	"github.com/starbuling-l/StarBlog/pkg/setting"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 var RedisConn *redis.Pool

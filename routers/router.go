@@ -1,15 +1,15 @@
 package routers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/starbuling-l/StarBlog/pkg/upload"
 	"net/http"
 
+	_ "github.com/starbuling-l/StarBlog/docs"
 	"github.com/starbuling-l/StarBlog/pkg/setting"
+	"github.com/starbuling-l/StarBlog/pkg/upload"
 	"github.com/starbuling-l/StarBlog/routers/api"
 	"github.com/starbuling-l/StarBlog/routers/api/v1"
 
-	_ "github.com/starbuling-l/StarBlog/docs"
+	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )

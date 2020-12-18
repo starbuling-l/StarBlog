@@ -2,11 +2,13 @@ package models
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"log"
 	"time"
+
+	"github.com/starbuling-l/StarBlog/pkg/setting"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 var db *gorm.DB
@@ -107,9 +109,6 @@ func addExtraSpaceIfExist(str string) string {
 	}
 	return ""
 }
-
-
-
 
 func closeDb() {
 	defer db.Close()

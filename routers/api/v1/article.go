@@ -1,17 +1,19 @@
 package v1
 
 import (
-	"github.com/astaxie/beego/validation"
-	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
+
 	"github.com/starbuling-l/StarBlog/models"
 	"github.com/starbuling-l/StarBlog/pkg/app"
 	"github.com/starbuling-l/StarBlog/pkg/e"
 	"github.com/starbuling-l/StarBlog/pkg/setting"
 	"github.com/starbuling-l/StarBlog/pkg/util"
 	"github.com/starbuling-l/StarBlog/server/article_service"
+
+	"github.com/astaxie/beego/validation"
+	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
-	"log"
-	"net/http"
 )
 
 // @Summary 获取单个文章
@@ -160,46 +162,46 @@ func AddArticle(c *gin.Context) {
 	valid.MaxSize(createdBy, 100, "created_by").Message("创建人最长为100个字符")
 	valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 
-	if valid.HasErrors()  {
+	if valid.HasErrors() {
 		app.MarkErrors(valid.Errors)
-		g.Response(http.StatusOK,e.INVALID_PARAMS,nil)
+		g.Response(http.StatusOK, e.INVALID_PARAMS, nil)
 	}
 
-	tag_service.Tag{ID:tagId}
+	tag_service.Tag{ID: tagId}
 
-	 exits,err := models.ExistTagByID(tagId)
-	if err!=nil {
+	exits, err := models.ExistTagByID(tagId)
+	if err != nil {
 		return
 	}
 
 	/*	code := e.INVALID_PARAMS
-	if !valid.HasErrors() {
-		if models.ExistTagByID(tagId) {
+		if !valid.HasErrors() {
+			if models.ExistTagByID(tagId) {
 
-			code = e.SUCCESS
+				code = e.SUCCESS
 
-			data := make(map[string]interface{})
-			data["tag_id"] = tagId
-			data["title"] = title
-			data["desc"] = desc
-			data["content"] = content
-			data["created_by"] = createdBy
-			data["state"] = state
-			models.AddArticle(data)
+				data := make(map[string]interface{})
+				data["tag_id"] = tagId
+				data["title"] = title
+				data["desc"] = desc
+				data["content"] = content
+				data["created_by"] = createdBy
+				data["state"] = state
+				models.AddArticle(data)
+			} else {
+				code = e.ERROR_NOT_EXIST_TAG
+			}
 		} else {
-			code = e.ERROR_NOT_EXIST_TAG
+			for _, err := range valid.Errors {
+				log.Printf("err.key: %s,err.message:%s", err.Key, err.Message)
+			}
 		}
-	} else {
-		for _, err := range valid.Errors {
-			log.Printf("err.key: %s,err.message:%s", err.Key, err.Message)
-		}
-	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": make(map[string]string),
-	})*/
+		c.JSON(http.StatusOK, gin.H{
+			"code": code,
+			"msg":  e.GetMsg(code),
+			"data": make(map[string]string),
+		})*/
 }
 
 // @Summary 编辑文章

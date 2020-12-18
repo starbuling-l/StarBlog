@@ -2,11 +2,12 @@ package logging
 
 import (
 	"fmt"
-	"github.com/starbuling-l/StarBlog/pkg/file"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
+
+	"github.com/starbuling-l/StarBlog/pkg/file"
 )
 
 type Level int

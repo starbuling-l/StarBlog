@@ -1,13 +1,14 @@
 package api
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/starbuling-l/StarBlog/models"
 	"github.com/starbuling-l/StarBlog/pkg/e"
 	"github.com/starbuling-l/StarBlog/pkg/util"
-	"log"
-	"net/http"
 )
 
 type auth struct {

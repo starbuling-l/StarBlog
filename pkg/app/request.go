@@ -1,8 +1,9 @@
 package app
 
 import (
-	"github.com/astaxie/beego/validation"
 	"log"
+
+	"github.com/astaxie/beego/validation"
 )
 
 // MarkErrors logs error logs

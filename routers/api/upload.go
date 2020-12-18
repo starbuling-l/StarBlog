@@ -1,11 +1,12 @@
 package api
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/starbuling-l/StarBlog/pkg/e"
 	"github.com/starbuling-l/StarBlog/pkg/upload"
-	"log"
-	"net/http"
 )
 
 func UploadImage(ctx *gin.Context) {
