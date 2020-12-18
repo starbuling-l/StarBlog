@@ -1,7 +1,7 @@
 package api
 
 import (
-	"log"
+	"github.com/starbuling-l/StarBlog/pkg/app"
 	"net/http"
 
 	"github.com/astaxie/beego/validation"
@@ -24,8 +24,9 @@ type auth struct {
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/auth [get]
 func GetAuth(c *gin.Context) {
-	data := make(map[string]interface{})
-	code := e.INVALID_PARAMS
+	g := app.Gin{C: c}
+	/*	data := make(map[string]interface{})
+		code := e.INVALID_PARAMS*/
 	username := c.Query("username")
 	password := c.Query("password")
 	valid := validation.Validation{}
@@ -33,7 +34,36 @@ func GetAuth(c *gin.Context) {
 		Username: username,
 		Password: password,
 	}
-	if ok, _ := valid.Valid(&a); ok {
+
+	ok, _ := valid.Valid(&a)
+
+	if !ok {
+		app.MarkErrors(valid.Errors)
+		g.Response(http.StatusOK, e.INVALID_PARAMS, nil)
+		return
+	}
+
+	exist, err := models.CheckAuth(username, password)
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_AUTH_CHECK_TOKEN_FAIL, nil)
+		return
+	}
+
+	if !exist {
+		g.Response(http.StatusOK, e.ERROR_AUTH, nil)
+		return
+	}
+
+	token, err := util.GenerateToken(username, password)
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_AUTH_TOKEN, nil)
+		return
+	}
+
+	g.Response(http.StatusOK, e.SUCCESS, map[string]interface{}{
+		"token": token,
+	})
+	/*if ok, _ := valid.Valid(&a); ok {
 		if ok := models.CheckAuth(username, password); ok {
 			token, err := util.GenerateToken(username, password)
 			if err != nil {
@@ -56,6 +86,5 @@ func GetAuth(c *gin.Context) {
 		"code": code,
 		"msg":  e.GetMsg(code),
 		"data": data,
-	})
-
+	})*/
 }
