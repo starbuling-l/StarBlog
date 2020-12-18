@@ -1,10 +1,9 @@
 package v1
 
 import (
-	"log"
+	"github.com/starbuling-l/StarBlog/server/tag_service"
 	"net/http"
 
-	"github.com/starbuling-l/StarBlog/models"
 	"github.com/starbuling-l/StarBlog/pkg/app"
 	"github.com/starbuling-l/StarBlog/pkg/e"
 	"github.com/starbuling-l/StarBlog/pkg/setting"
@@ -152,6 +151,7 @@ func AddArticle(c *gin.Context) {
 	content := c.Query("content")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
 	createdBy := c.Query("created_by")
+	coverImageUrl := c.PostForm("cover_image_url")
 
 	valid := validation.Validation{}
 	valid.Min(tagId, 1, "tag_id").Message("标题ID必须大于0")
@@ -167,12 +167,35 @@ func AddArticle(c *gin.Context) {
 		g.Response(http.StatusOK, e.INVALID_PARAMS, nil)
 	}
 
-	tag_service.Tag{ID: tagId}
+	tag := tag_service.Tag{ID: tagId}
 
-	exits, err := models.ExistTagByID(tagId)
+	exits, err := tag.ExitByID()
 	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_EXIST_TAG_FAIL, nil)
 		return
 	}
+
+	if !exits {
+		g.Response(http.StatusOK, e.ERROR_NOT_EXIST_TAG, nil)
+	}
+
+	article := article_service.Article{
+		TagID:         tagId,
+		Title:         title,
+		Desc:          desc,
+		Content:       content,
+		CoverImageUrl: coverImageUrl,
+		State:         state,
+		CreatedBy:     createdBy,
+	}
+
+	err = article.Add()
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_ADD_ARTICLE_FAIL, nil)
+		return
+	}
+
+	g.Response(http.StatusOK, e.SUCCESS, nil)
 
 	/*	code := e.INVALID_PARAMS
 		if !valid.HasErrors() {
@@ -215,12 +238,15 @@ func AddArticle(c *gin.Context) {
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles/{id} [put]
 func EditArticle(c *gin.Context) {
+	g := app.Gin{C: c}
+
 	id := com.StrTo(c.Param("id")).MustInt()
-	tagId := com.StrTo(c.Query("tag_id")).MustInt()
-	title := c.Query("title")
-	desc := c.Query("desc")
-	content := c.Query("content")
-	modifiedBy := c.Query("modified_by")
+	tagId := com.StrTo(c.PostForm("tag_id")).MustInt()
+	title := c.PostForm("title")
+	desc := c.PostForm("desc")
+	content := c.PostForm("content")
+	modifiedBy := c.PostForm("modified_by")
+	coverImageUrl := c.PostForm("cover_image_url")
 
 	valid := validation.Validation{}
 	valid.Min(tagId, 1, "tag_id").Message("标题ID必须大于0")
@@ -230,44 +256,86 @@ func EditArticle(c *gin.Context) {
 	valid.Required(modifiedBy, "modified_by").Message("修改人不能为空")
 	valid.MaxSize(modifiedBy, 100, "modified_by").Message("修改人最长为100个字符")
 
-	code := e.INVALID_PARAMS
-	if !valid.HasErrors() {
-		if models.ExistArticleByID(id) {
-			if models.ExistTagByID(tagId) {
-				code = e.SUCCESS
-
-				data := make(map[string]interface{})
-				if tagId > 0 {
-					data["tag_id"] = tagId
-				}
-				if title != "" {
-					data["title"] = title
-				}
-				if desc != "" {
-					data["desc"] = desc
-				}
-				if content != "" {
-					data["content"] = content
-				}
-				data["modified_by"] = modifiedBy
-				models.EditArticle(id, data)
-			} else {
-				code = e.ERROR_NOT_EXIST_TAG
-			}
-		} else {
-			code = e.ERROR_NOT_EXIST_ARTICLE
-		}
-	} else {
-		for _, err := range valid.Errors {
-			log.Printf("err.key: %s,err.message:%s", err.Key, err.Message)
-		}
+	if valid.HasErrors() {
+		g.Response(http.StatusOK, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": make(map[string]string),
-	})
+	article := article_service.Article{
+		ID:            id,
+		Title:         title,
+		Desc:          desc,
+		Content:       content,
+		CoverImageUrl: coverImageUrl,
+		ModifiedBy:    modifiedBy,
+	}
+	existArticle, err := article.ExistByID()
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_CHECK_EXIST_ARTICLE_FAIL, nil)
+		return
+	}
+
+	if !existArticle {
+		g.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
+		return
+	}
+
+	tag := tag_service.Tag{ID: tagId}
+	existTag, err := tag.ExitByID()
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_EXIST_TAG_FAIL, nil)
+		return
+	}
+
+	if !existTag {
+		g.Response(http.StatusOK, e.ERROR_NOT_EXIST_TAG, nil)
+		return
+	}
+
+	err = article.Edit()
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_EDIT_ARTICLE_FAIL, nil)
+	}
+
+	g.Response(http.StatusOK, e.SUCCESS, nil)
+	/*	code := e.INVALID_PARAMS
+		if !valid.HasErrors() {
+			if models.ExistArticleByID(id) {
+				if models.ExistTagByID(tagId) {
+					code = e.SUCCESS
+
+					data := make(map[string]interface{})
+					if tagId > 0 {
+						data["tag_id"] = tagId
+					}
+					if title != "" {
+						data["title"] = title
+					}
+					if desc != "" {
+						data["desc"] = desc
+					}
+					if content != "" {
+						data["content"] = content
+					}
+					data["modified_by"] = modifiedBy
+					models.EditArticle(id, data)
+				} else {
+					code = e.ERROR_NOT_EXIST_TAG
+				}
+			} else {
+				code = e.ERROR_NOT_EXIST_ARTICLE
+			}
+		} else {
+			for _, err := range valid.Errors {
+				log.Printf("err.key: %s,err.message:%s", err.Key, err.Message)
+			}
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"code": code,
+			"msg":  e.GetMsg(code),
+			"data": make(map[string]string),
+		})*/
 }
 
 // @Summary 删除文章
@@ -276,11 +344,36 @@ func EditArticle(c *gin.Context) {
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles/{id} [delete]
 func DeleteArticle(c *gin.Context) {
+	g := app.Gin{C: c}
 	id := com.StrTo(c.Param("id")).MustInt()
 
 	valid := validation.Validation{}
 	valid.Min(id, 1, "id").Message("ID必须大于0")
-	code := e.INVALID_PARAMS
+
+	if valid.HasErrors() {
+		g.Response(http.StatusOK, e.INVALID_PARAMS, nil)
+		return
+	}
+
+	article := article_service.Article{ID: id}
+	exist, err := article.ExistByID()
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_CHECK_EXIST_ARTICLE_FAIL, nil)
+		return
+	}
+
+	if !exist {
+		g.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
+	}
+
+	err = article.Delete()
+	if err != nil {
+		g.Response(http.StatusOK, e.ERROR_DELETE_ARTICLE_FAIL, nil)
+		return
+	}
+
+	g.Response(http.StatusOK, e.SUCCESS, nil)
+/*	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
 		code = e.SUCCESS
 		if models.ExistArticleByID(id) {
@@ -298,5 +391,5 @@ func DeleteArticle(c *gin.Context) {
 		"code": code,
 		"msg":  e.GetMsg(code),
 		"data": make(map[string]string),
-	})
+	})*/
 }
