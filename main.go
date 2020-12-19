@@ -82,7 +82,7 @@ func main() {
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			log.Printf("Server err:%v", err)
+			log.Fatalf("Server err:%v", err)
 		}
 	}()
 
