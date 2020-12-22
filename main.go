@@ -99,4 +99,3 @@ func main() {
 	}
 	log.Println("server exiting")
 }
-
